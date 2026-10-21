@@ -1,0 +1,56 @@
+---
+title: "Baby Names Analysis: Greta"
+format: html
+execute:
+  echo: false
+  message: false
+  warning: false
+---
+
+```{r}
+library(tidyverse)
+
+baby_names <- read_csv("ssa-baby-names.csv", show_col_types = FALSE)
+
+events <- tibble(
+  year = c(1918, 1929, 1945, 1969, 2001, 2020),
+  event = c(
+    "WWI Ends (1918)",
+    "Great Depression (1929)",
+    "WWII Ends (1945)",
+    "Moon Landing (1969)",
+    "9/11 Attacks (2001)",
+    "COVID-19 (2020)"
+  ),
+  y_pos = c(510, 450, 510, 560, 510, 440)
+)
+
+baby_names |>
+  filter(str_to_upper(name) == "GRETA") |>
+  summarize(count = sum(count), .by = year) |>
+  ggplot(aes(x = year, y = count)) +
+  geom_vline(
+    data = events,
+    aes(xintercept = year),
+    linetype = "dashed",
+    color = "gray55"
+  ) +
+  geom_line(color = "steelblue", linewidth = 1) +
+  geom_text(
+    data = events,
+    aes(x = year, y = y_pos, label = event),
+    hjust = -0.05,
+    size = 3,
+    color = "gray30"
+  ) +
+  scale_x_continuous(expand = expansion(mult = c(0.02, 0.18))) +
+  scale_y_continuous(limits = c(0, 600)) +
+  labs(
+    title = "Popularity of the Name 'Greta' Over Time",
+    subtitle = "U.S. Social Security Administration baby name registrations (1880–2025) with key U.S. historical events",
+    x = "Year",
+    y = "Number of Babies",
+    caption = "Source: Social Security Administration (ssa.gov)"
+  ) +
+  theme_minimal()
+```
